@@ -4,12 +4,7 @@ module.exports = function(api){
         presets: ['babel-preset-expo'],
         plugins: [
             ['react-native-worklets-core/plugin'],
-            [
-                'react-native-reanimated/plugin',
-                {
-                    globals: ['__scanOCR'],
-                }
-            ]
+            ['react-native-reanimated/plugin']    
         ],
     };
 };

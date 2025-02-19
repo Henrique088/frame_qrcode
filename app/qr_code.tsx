@@ -7,7 +7,7 @@ import {
 } from "react-native-vision-camera";
 import {Link, useRouter} from 'expo-router';
 
-export function Qr_code() {
+function Qr_code() {
   const router = useRouter();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const device = useCameraDevice("back"); // Obtém a câmera traseira
@@ -52,6 +52,7 @@ export function Qr_code() {
   }
 
   if (!hasPermission ) {
+    
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>Permissão da câmera negada.</Text>

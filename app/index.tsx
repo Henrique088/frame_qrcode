@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
 
-export function Home() {
+
+function Home() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tela Inicial</Text>
