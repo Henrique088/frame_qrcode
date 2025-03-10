@@ -19,6 +19,12 @@ function Home() {
             <Text style={styles.buttonText}>Abrir Frame</Text>
           </TouchableOpacity>
         </Link>
+
+        <Link href="/foto" asChild>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Tirar Foto</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );
