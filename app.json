@@ -28,7 +28,9 @@
       },
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.READ_MEDIA_IMAGES",
+        "android.WRITE_EXTERNAL_STORAGE"
       ],
       "package": "com.henrique88.qr_code"
     },

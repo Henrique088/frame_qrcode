@@ -9,6 +9,7 @@ import {
 } from "react-native-vision-camera";
 import { Worklets } from 'react-native-worklets-core';
 import { useTextRecognition } from "react-native-vision-camera-text-recognition";
+import useAppState from './appstate';
 
 function Frame() {
   const router = useRouter();
@@ -18,6 +19,8 @@ function Frame() {
   const [texto, setTexto] = useState<string | null > (null);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [isFlashOn, setIsFlashOn] = useState(false);
+  const appState = useAppState();
+  const isCameraActive = appState === 'active';
 
   useEffect(() => {
     (async () => {
@@ -82,6 +85,7 @@ function toggleFlash (){
       {!!device && (
         <View style={{ flex: 1 }}>
           {/* Câmera */}
+          {isCameraActive && (
           <Camera
             style={StyleSheet.absoluteFill}
             torch={isFlashOn ? "on" : "off"} // Controla o flash
@@ -90,6 +94,13 @@ function toggleFlash (){
             mode={"recognize"}
             frameProcessor={frameProcessor}
           />
+          )}
+          {/* Indicador de carregamento */}
+          {!isCameraActive && (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+              <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+          )}
 
           {/* Botão de Flash */}
           <View style={styles.overlay}>

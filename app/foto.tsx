@@ -1,18 +1,25 @@
 import { useState, useEffect, useRef } from "react";
-import { View, ActivityIndicator, Text, Button, Alert } from "react-native";
+import { View, ActivityIndicator, Text, Button, Alert,AppState  } from "react-native";
 import { Camera, useCameraDevice } from "react-native-vision-camera";
 import * as MediaLibrary from "expo-media-library";
+import useAppState from './appstate';
 import RNFS from "react-native-fs";
 import * as FileSystem from 'expo-file-system';
 
 function Foto() {
+  //const [isCameraActive, setIsCameraActive] = useState(true);
+  //const appState = useRef(AppState.currentState);
   const cameraRef = useRef(null);
   const [hasPermission, setHasPermission] = useState(null);
   const device = useCameraDevice("back");
   //const [photoUri, setPhotoUri] = useState("");
   const [ImageSource, setImageSource] = useState("");
+  const albumName = 'Data Access'; // 👈 Nome que vai aparecer na galeria
+  const appState = useAppState();
+  const isCameraActive = appState === 'active';
 
 
+ 
 
   useEffect(() => {
     (async () => {
@@ -22,6 +29,30 @@ function Foto() {
     })();
   }, []);
   
+  // // Verifica se o app está em segundo plano ou ativo
+  // // e ativa/desativa a câmera
+  // useEffect(() => {
+  //   const subscription = AppState.addEventListener("change", nextAppState => {
+  //     if (
+  //       appState.current.match(/active/) &&
+  //       nextAppState.match(/inactive|background/)
+  //     ) {
+  //       setIsCameraActive(false);
+  //     }
+
+  //     if (
+  //       appState.current.match(/inactive|background/) &&
+  //       nextAppState === "active"
+  //     ) {
+  //       setIsCameraActive(true);
+  //     }
+
+  //     appState.current = nextAppState;
+  //   });
+
+  //   return () => subscription.remove();
+  // }, []);
+
   // Solicitar permissão para salvar no MediaLibrary
   const requestAcessMedia = async () => {
     const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -39,14 +70,21 @@ function Foto() {
       return;
     }
     try {
-      const permission = await requestAcessMedia();
+      //const permission = await requestAcessMedia();
       const photo = await cameraRef.current.takePhoto({
-        flash: 'on',
+       
         enableAutoRedEyeReduction: true
       });
       
       // Criar um asset no MediaLibrary
+      console.log("Foto tirada:", photo);
       const asset = await MediaLibrary.createAssetAsync(photo.path);
+      const album = await MediaLibrary.getAlbumAsync(albumName);
+      if (album) {
+        await MediaLibrary.addAssetsToAlbumAsync([asset], album, true); // false = não mover, só vincula
+      } else {
+        await MediaLibrary.createAlbumAsync(albumName, asset, true);
+      }
       setImageSource(asset.uri);
       console.log("Foto tirada:", asset.uri);
       Alert.alert("Sucesso", "Foto salva na galeria!");
@@ -60,7 +98,8 @@ function Foto() {
       // }
 
       // Enviar para o servidor
-      Update(await FileSystem.readAsStringAsync(asset.uri, {encoding: FileSystem.EncodingType.Base64, }));
+      //Update(await FileSystem.readAsStringAsync(asset.uri, {encoding: FileSystem.EncodingType.Base64, }));
+      MediaLibrary.deleteAssetsAsync([asset.id])
     } catch (error) {
       console.error("Erro ao tirar foto:", error);
     }
@@ -172,14 +211,16 @@ function Foto() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Camera
-        ref={cameraRef}
-        style={{ flex: 1 }}
-        isActive={true}
-        device={device}
-        photo={true}
-        photoQualityBalance="speed"
-      />
+      {isCameraActive && (
+        <Camera
+          ref={cameraRef}
+          style={{ flex: 1 }}
+          device={device}
+          isActive={true}
+          photo={true}
+          photoQualityBalance="speed"
+        />
+      )}
 
       <Button title="Tirar Foto" onPress={tira_foto} />
       <Button title="Enviar para o Servidor" onPress={() => Update(ImageSource)} />

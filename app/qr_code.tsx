@@ -6,12 +6,15 @@ import {
   CodeScanner,
 } from "react-native-vision-camera";
 import {Link, useRouter} from 'expo-router';
+import useAppState from './appstate';
 
 function Qr_code() {
   const router = useRouter();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const device = useCameraDevice("back"); // Obtém a câmera traseira
   const [qrCode, setQrCode] = useState<string | null>(null);
+  const appState = useAppState();
+  const isCameraActive = appState === 'active';
 
   useEffect(() => {
     (async () => {
@@ -62,12 +65,14 @@ function Qr_code() {
 
   return (
     <View style={{ flex: 1 }}>
+      {isCameraActive && (
       <Camera
         style={{ flex: 1 }}
         isActive={true}
         device={device}
         codeScanner={codeScanner}
       />
+      )}
       {/* Exibir o QR Code lido na tela */}
       {qrCode && (
         <View
